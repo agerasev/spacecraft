@@ -1,5 +1,7 @@
 extern crate sdl2;
-extern crate gl;
+extern crate gl4u;
+
+use gl4u::gl;
 
 use sdl2::event::{Event};
 use sdl2::keyboard::{Keycode};

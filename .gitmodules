@@ -1,0 +1,3 @@
+[submodule "gl4u"]
+	path = gl4u
+	url = https://github.com/nthend/gl4u-rs.git

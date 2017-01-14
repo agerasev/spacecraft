@@ -5,4 +5,4 @@ authors = ["Alexey Gerasev <alexey.gerasev@gmail.com>"]
 
 [dependencies]
 sdl2 = "0.27.3"
-gl = "0.6.1"
+gl4u = { path = "gl4u" }
