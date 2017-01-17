@@ -2,6 +2,7 @@ extern crate sdl2;
 extern crate gl4u;
 
 use gl4u::gl;
+use gl4u::shader::{Shader, Type};
 
 use sdl2::event::{Event};
 use sdl2::keyboard::{Keycode};
@@ -16,6 +17,11 @@ fn main() {
 
 	let context = window.gl_create_context().unwrap();
 	gl::load_with(|name| video_subsys.gl_get_proc_address(name) as *const _);
+
+	let (vs, log) = Shader::new(Type::Vertex).load_file("res/shaders/main.vs").unwrap().compile().unwrap();
+	if log.len() > 0 { println!("{}", log); }
+	let (fs, log) = Shader::new(Type::Vertex).load_file("res/shaders/main.fs").unwrap().compile().unwrap();
+	if log.len() > 0 { println!("{}", log); }
 
 	let mut events = sdl_context.event_pump().unwrap();
 	'main : loop {
