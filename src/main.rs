@@ -1,5 +1,9 @@
 extern crate sdl2;
 extern crate gl4u;
+extern crate linalg as la;
+
+mod core;
+mod view;
 
 use gl4u::gl;
 use gl4u::shader::{Shader, Type};
@@ -9,7 +13,6 @@ use gl4u::buffer::{Buffer};
 use sdl2::event::{Event};
 use sdl2::keyboard::{Keycode};
 
-#[allow(unused_variables)]
 fn main() {
 	let width = 600;
 	let height = 600;
@@ -18,7 +21,7 @@ fn main() {
 	let video_subsys = sdl_context.video().unwrap();
 	let window = video_subsys.window("SpaceCraft", width, height).position_centered().opengl().build().unwrap();
 
-	let context = window.gl_create_context().unwrap();
+	let _context = window.gl_create_context().unwrap();
 	gl::load_with(|name| video_subsys.gl_get_proc_address(name) as *const _);
 
 	let (vs, log) = Shader::new(Type::Vertex).load_file("res/shaders/main.vs").unwrap().compile().unwrap();

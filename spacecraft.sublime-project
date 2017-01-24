@@ -17,6 +17,11 @@
 			"name": "Cargo Run",
 			"shell_cmd": "cargo run",
 			"working_dir": "${project_path}"
+		},
+		{
+			"name": "Cargo Test",
+			"shell_cmd": "cargo test",
+			"working_dir": "${project_path}"
 		}
 	]
 }
