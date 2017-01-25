@@ -1,2 +1,4 @@
-mod engine;
-mod draw;
+
+pub mod engine;
+pub mod draw;
+pub mod planet;

@@ -9,6 +9,12 @@ pub struct Planet {
 	pub o: mat3d
 }
 
+impl Planet {
+	pub fn new() -> Self {
+		Planet { p: vec3d::zero(), o: mat3d::one() }
+	}
+}
+
 impl Pos for Planet {
 	fn pos(&self) -> vec3d {
 		self.p

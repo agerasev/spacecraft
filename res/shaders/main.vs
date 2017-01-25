@@ -1,13 +1,14 @@
 #version 130
 
-uniform mat3 model;
+uniform mat4 model;
+uniform mat4 view;
 
 in vec3 position;
 in vec3 color;
 
-out vec3 _color;
+out vec3 var_color;
 
 void main() {
-	_color = color;
-	gl_Position = vec4(model*position, 1.0);
+	var_color = color;
+	gl_Position = view*model*vec4(position, 1.0);
 }

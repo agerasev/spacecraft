@@ -2,16 +2,20 @@ extern crate sdl2;
 extern crate gl4u;
 extern crate linalg as la;
 
+use la::mat::*;
+
 mod core;
 mod view;
 
 use gl4u::gl;
-use gl4u::shader::{Shader, Type};
-use gl4u::program::{Program};
-use gl4u::buffer::{Buffer};
+use gl4u::gl::types::*;
 
 use sdl2::event::{Event};
 use sdl2::keyboard::{Keycode};
+
+use view::engine::Engine;
+use view::planet::Planet;
+use view::draw::Draw;
 
 fn main() {
 	let width = 600;
@@ -24,17 +28,8 @@ fn main() {
 	let _context = window.gl_create_context().unwrap();
 	gl::load_with(|name| video_subsys.gl_get_proc_address(name) as *const _);
 
-	let (vs, log) = Shader::new(Type::Vertex).load_file("res/shaders/main.vs").unwrap().compile().unwrap();
-	if log.len() > 0 { println!("{}", log); }
-	let (fs, log) = Shader::new(Type::Fragment).load_file("res/shaders/main.fs").unwrap().compile().unwrap();
-	if log.len() > 0 { println!("{}", log); }
-
-	let prog = Program::new().attach(vs).attach(fs).link().unwrap();
-
-	let mut coord = Buffer::new(3);
-	coord.load_float(&[0.0, 1.0, 0.0,  -(3.0 as f32).sqrt()/2.0, -0.5, 0.0,  (3.0 as f32).sqrt()/2.0, -0.5, 0.0]);
-	let mut color = Buffer::new(3);
-	color.load_float(&[1.0, 0.0, 0.0,  0.0, 1.0, 0.0,  0.0, 0.0, 1.0]);
+	let engine = Engine::new().load_program("main", "main.vs", "main.fs").unwrap();
+	let planet = Planet::new();
 
 	let mut phi: f32 = 0.0;
 	let mut events = sdl_context.event_pump().unwrap();
@@ -47,24 +42,22 @@ fn main() {
 			}
 		}
 
-		let model: &[f32] = &[
-			phi.cos(), phi.sin(), 0.0,
-			-phi.sin(), phi.cos(), 0.0,
-			0.0, 0.0, 1.0,
-		];
+		let view = mat4::<GLfloat>::from([
+			0.5*phi.cos(), 0.5*phi.sin(), 0.0, 0.0,
+			-0.5*phi.sin(), 0.5*phi.cos(), 0.0, 0.0,
+			0.0, 0.0, 0.1, 0.0,
+			0.0, 0.0, 0.0, 1.0
+		]);
 
 		unsafe {
 			gl::ClearColor(0.0, 0.0, 0.0, 1.0);
 			gl::Clear(gl::COLOR_BUFFER_BIT);
-
-			prog.use_().unwrap()
-				.attribute("position", &coord).unwrap()
-				.attribute("color", &color).unwrap()
-				.uniform_matrix("model", model).unwrap()
-				.draw(0, 3).unwrap();
-
-			gl::Flush();
 		}
+			planet.draw(&engine)
+				.uniform_matrix("view", view.data()).unwrap()
+				.draw().unwrap();
+
+		unsafe { gl::Flush(); }
 
 		phi += 0.01;
 
