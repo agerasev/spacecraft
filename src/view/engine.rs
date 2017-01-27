@@ -12,6 +12,10 @@ pub struct Engine {
 	programs: HashMap<String, Program>,
 }
 
+pub struct Handle<'a> {
+	engine: &'a Engine,
+}
+
 impl Engine {
 	pub fn new() -> Self {
 		Engine { shaders: HashMap::new(), programs: HashMap::new() }
@@ -45,5 +49,19 @@ impl Engine {
 			Some(prog) => prog.use_(),
 			None => Err("No such program `".to_string() + name + "`"),
 		}
+	}
+
+	pub fn handle(&self) -> Handle {
+		Handle::new(self)
+	}
+}
+
+impl<'a> Handle<'a> {
+	fn new(engine: &'a Engine) -> Self {
+		Handle::<'a> { engine: engine }
+	}
+
+	pub fn use_program(&self, name: &str) -> Pass {
+		self.engine.use_program(name).unwrap()
 	}
 }

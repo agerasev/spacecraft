@@ -53,7 +53,7 @@ fn main() {
 			gl::ClearColor(0.0, 0.0, 0.0, 1.0);
 			gl::Clear(gl::COLOR_BUFFER_BIT);
 		}
-			planet.draw(&engine)
+			planet.draw(&engine.handle())
 				.uniform_matrix("view", view.data()).unwrap()
 				.draw().unwrap();
 
