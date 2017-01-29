@@ -7,9 +7,12 @@ use gl4u::shader::{Shader, Type};
 use gl4u::program::Program;
 use gl4u::pass::Pass;
 
+use view::camera::Camera;
+
 pub struct Engine {
 	shaders: HashMap<String, Rc<Shader>>,
 	programs: HashMap<String, Program>,
+	pub camera: Camera,
 }
 
 pub struct Handle<'a> {
@@ -18,7 +21,7 @@ pub struct Handle<'a> {
 
 impl Engine {
 	pub fn new() -> Self {
-		Engine { shaders: HashMap::new(), programs: HashMap::new() }
+		Engine { shaders: HashMap::new(), programs: HashMap::new(), camera: Camera::new() }
 	}
 
 	pub fn load_shader(&mut self, filename: &str, sht: Type) -> Result<Rc<Shader>, String> {
@@ -63,5 +66,7 @@ impl<'a> Handle<'a> {
 
 	pub fn use_program(&self, name: &str) -> Pass {
 		self.engine.use_program(name).unwrap()
+			.uniform_matrix("proj", self.engine.camera.proj.mat().data()).unwrap()
+			.uniform_matrix("view", self.engine.camera.model.mat().inverse().data()).unwrap()
 	}
 }

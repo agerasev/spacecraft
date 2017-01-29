@@ -1,32 +1,21 @@
 extern crate gl4u;
 
-use la::vec::*;
-use la::mat::*;
-
-use core::pos::*;
-use core::ori::*;
-use core::planet::Planet as CorePlanet;
-
 use view::draw::Draw;
 use view::engine::Handle;
 use view::model::*;
 
-use gl4u::gl::types::*;
 use gl4u::buffer::Buffer;
-use gl4u::pass::{Pass, Prim};
+use gl4u::pass::Prim;
 
 pub struct Planet {
-	pub planet: CorePlanet,
+	pub model: Model,
 	pub vertex: Buffer,
 	pub color: Buffer,
-	pub model_: mat4<GLfloat>
 }
 
 impl Planet {
 	pub fn new() -> Self {
-		let mut self_ = Planet { planet: CorePlanet::new(), vertex: Buffer::new(3), color: Buffer::new(3), model_: mat4::one() };
-		self_.set_pos(vec3d::zero());
-		self_.set_ori(mat3d::one());
+		let mut self_ = Planet { vertex: Buffer::new(3), color: Buffer::new(3), model: Model::new() };
 
 		self_.vertex.load_float(&[
 			 1.0, 1.0, 1.0,
@@ -96,54 +85,12 @@ impl Planet {
 	}
 }
 
-impl Pos for Planet {
-	fn pos(&self) -> vec3d {
-		self.planet.pos()
-	}
-}
-
-impl PosMut for Planet {
-	fn set_pos(&mut self, p: vec3d) {
-		self.planet.set_pos(p);
-		for i in 0..3 {
-			self.model_[(3, i)] = p[i] as GLfloat;
-		}
-	}
-}
-
-impl Ori for Planet {
-	fn ori(&self) -> mat3d {
-		self.planet.ori()
-	}
-}
-
-impl OriMut for Planet {
-	fn set_ori(&mut self, o: mat3d) {
-		self.planet.set_ori(o);
-		for j in 0..3 {
-			for i in 0..3 {
-				self.model_[(i, j)] = o[(i, j)] as GLfloat;
-			}
-		}
-	}
-}
-
-impl Model for Planet {
-	fn model(&self) -> mat4<GLfloat> {
-		self.model_
-	}
-}
-
-impl ModelMut for Planet {
-
-}
-
 impl Draw for Planet {
-	fn draw(&self, handle: &Handle) -> Pass {
-		handle.use_program("main")
-			.uniform_matrix("model", self.model().data()).unwrap()
-			.attribute("position", &self.vertex).unwrap()
-			.attribute("color", &self.color).unwrap()
-			.primitive(Prim::Quads).range(0, 6*4)
+	fn draw(&self, handle: &Handle) -> Result<(), String> {
+		let mut pass = handle.use_program("main");
+		pass = try!(pass.uniform_matrix("model", self.model.mat().data()));
+		pass = try!(pass.attribute("position", &self.vertex));
+		pass = try!(pass.attribute("color", &self.color));
+		pass.primitive(Prim::Quads).range(0, 6*4).draw()
 	}
 }
