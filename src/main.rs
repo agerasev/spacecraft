@@ -38,7 +38,10 @@ fn main() {
 
 	unsafe {
 		gl::Enable(gl::DEPTH_TEST);
-		gl::DepthFunc(gl::LEQUAL);
+		gl::DepthFunc(gl::LESS);
+		
+		gl::Enable(gl::CULL_FACE);
+		gl::CullFace(gl::FRONT);
 	}
 
 	let mut engine = Engine::new().load_program("main", "main.vs", "main.fs").unwrap();
@@ -92,11 +95,10 @@ fn main() {
 			gl::ClearColor(0.0, 0.0, 0.0, 1.0);
 			gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 		}
-			planet.draw(&engine.handle()).unwrap();
+		
+		planet.draw(&engine.handle()).unwrap();
 
 		unsafe { gl::Flush(); }
-
-		phi += 0.01;
 
 		window.gl_swap_window();
 	}
