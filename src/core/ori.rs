@@ -33,6 +33,7 @@ macro_rules! impl_ori_mut {
 macro_rules! derive_ori {
 	($Struct:ident, $field:ident) => (
 		impl Ori for $Struct {
+			#[inline]
 			fn ori(&self) -> mat3d {
 				self.$field.ori()
 			}
@@ -45,6 +46,7 @@ macro_rules! derive_ori_mut {
 		derive_ori!($Struct, $field);
 
 		impl OriMut for $Struct {
+			#[inline]
 			fn set_ori(&mut self, o: mat3d) {
 				self.$field.set_ori(o);
 			}

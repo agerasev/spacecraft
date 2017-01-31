@@ -14,6 +14,11 @@ pub struct Planet {
 	ori_: mat3d,
 }
 
+impl_pos_mut!(Planet, pos_);
+impl_ori_mut!(Planet, ori_);
+
+derive_map!(Planet, array);
+
 impl Planet {
 	pub fn new(rad: i32) -> Self {
 		let mut self_ = Planet { array: Array::new([rad, rad, rad].into()), pos_: vec3d::zero(), ori_: mat3d::one() };
@@ -28,8 +33,3 @@ impl Planet {
 		self_
 	}
 }
-
-impl_pos_mut!(Planet, pos_);
-impl_ori_mut!(Planet, ori_);
-
-derive_map!(Planet, array);

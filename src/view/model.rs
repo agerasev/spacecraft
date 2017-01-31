@@ -32,6 +32,7 @@ macro_rules! impl_model {
 macro_rules! derive_model {
 	($Struct:ident, $field:ident) => (
 		impl Model for $Struct {
+			#[inline]
 			fn model(&self) -> mat4<GLfloat> {
 				self.$field.model()
 			}

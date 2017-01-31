@@ -48,7 +48,7 @@ fn main() {
 	}
 
 	let mut engine = Engine::new().load_program("main", "main.vs", "main.fs").unwrap();
-	let planet = Planet::new(64);
+	let mut planet = Planet::new(32);
 
 	let mut phi: f64 = 0.0;
 	let mut theta: f64 = PI/4.0;
