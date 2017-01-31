@@ -3,24 +3,31 @@ extern crate gl4u;
 use la::vec::*;
 use la::mat::*;
 
+use core::pos::*;
+use core::ori::*;
+
+use gl4u::gl::types::*;
+
 use view::model::*;
 use view::proj::*;
 
 pub struct Camera {
-	pub p: vec3d,
-	pub o: mat3d,
-
-	pub model: Model,
+	pub pos_: vec3d,
+	pub ori_: mat3d,
 	pub proj: Proj,
 }
 
 impl Camera {
 	pub fn new() -> Self {
 		Camera {
-			p: vec3d::zero(),
-			o: mat3d::one(),
-			model: Model::new(),
+			pos_: vec3d::zero(),
+			ori_: mat3d::one(),
 			proj: Proj::new(),
 		}
 	}
 }
+
+impl_pos_mut!(Camera, pos_);
+impl_ori_mut!(Camera, ori_);
+
+impl_model!(Camera);

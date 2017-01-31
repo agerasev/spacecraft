@@ -4,37 +4,32 @@ use la::mat::*;
 use core::pos::*;
 use core::ori::*;
 
+use core::block::*;
+use core::map::Map;
+use core::array::Array;
+
 pub struct Planet {
-	pub p: vec3d,
-	pub o: mat3d
+	array: Array,
+	pos_: vec3d,
+	ori_: mat3d,
 }
 
 impl Planet {
-	pub fn new() -> Self {
-		Planet { p: vec3d::zero(), o: mat3d::one() }
+	pub fn new(rad: i32) -> Self {
+		let mut self_ = Planet { array: Array::new([rad, rad, rad].into()), pos_: vec3d::zero(), ori_: mat3d::one() };
+		for iz in -rad..rad {
+			for iy in -rad..rad {
+				for ix in -rad..rad {
+					let rv = vec3d::from([(ix as f64) + 0.5, (iy as f64) + 0.5, (iz as f64) + 0.5]);
+					self_.set([ix, iy, iz].into(), if rv.length() < (rad - 1) as f64 { ROCK } else { VOID });
+				}
+			}
+		}
+		self_
 	}
 }
 
-impl Pos for Planet {
-	fn pos(&self) -> vec3d {
-		self.p
-	}
-}
+impl_pos_mut!(Planet, pos_);
+impl_ori_mut!(Planet, ori_);
 
-impl PosMut for Planet {
-	fn set_pos(&mut self, p: vec3d) {
-		self.p = p;
-	}
-}
-
-impl Ori for Planet {
-	fn ori(&self) -> mat3d {
-		self.o
-	}
-}
-
-impl OriMut for Planet {
-	fn set_ori(&mut self, o: mat3d) {
-		self.o = o;
-	}
-}
+derive_map!(Planet, array);

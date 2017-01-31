@@ -7,6 +7,7 @@ use gl4u::shader::{Shader, Type};
 use gl4u::program::Program;
 use gl4u::pass::Pass;
 
+use view::model::Model;
 use view::camera::Camera;
 
 pub struct Engine {
@@ -67,6 +68,6 @@ impl<'a> Handle<'a> {
 	pub fn use_program(&self, name: &str) -> Pass {
 		self.engine.use_program(name).unwrap()
 			.uniform_matrix("proj", self.engine.camera.proj.mat().data()).unwrap()
-			.uniform_matrix("view", self.engine.camera.model.mat().inverse().data()).unwrap()
+			.uniform_matrix("view", self.engine.camera.model().inverse().data()).unwrap()
 	}
 }

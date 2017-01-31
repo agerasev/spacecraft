@@ -2,15 +2,18 @@ extern crate sdl2;
 extern crate gl4u;
 extern crate linalg as la;
 
+#[allow(dead_code)]
+#[macro_use]
+mod core;
+
+#[allow(dead_code)]
+#[macro_use]
+mod view;
+
 use std::f64::consts::PI;
 
 use la::vec::*;
 use la::mat::*;
-
-#[allow(dead_code)]
-mod core;
-#[allow(dead_code)]
-mod view;
 
 use gl4u::gl;
 
@@ -45,7 +48,7 @@ fn main() {
 	}
 
 	let mut engine = Engine::new().load_program("main", "main.vs", "main.fs").unwrap();
-	let planet = Planet::new();
+	let planet = Planet::new(64);
 
 	let mut phi: f64 = 0.0;
 	let mut theta: f64 = PI/4.0;
@@ -84,8 +87,8 @@ fn main() {
 		let right = dir.cross(vec3d::from([0.0, 0.0, 1.0])).normalize();
 		let top = right.cross(dir).normalize();
 		let front = dir;
-		engine.camera.model.set_pos(dir*rad);
-		engine.camera.model.set_ori(mat3d::from([
+		engine.camera.set_pos(dir*rad);
+		engine.camera.set_ori(mat3d::from([
 			right[0], top[0], front[0], 
 			right[1], top[1], front[1], 
 			right[2], top[2], front[2], 
