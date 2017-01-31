@@ -17,7 +17,26 @@ pub struct Planet {
 impl_pos_mut!(Planet, pos_);
 impl_ori_mut!(Planet, ori_);
 
-derive_map!(Planet, array);
+impl Map for Planet {
+	#[inline]
+	fn size(&self) -> vec3i {
+		self.array.size()
+	}
+	
+	#[inline]
+	fn get(&self, v: vec3i) -> Block {
+		if self.array.inside(v) {
+			unsafe { self.array.get_unchecked(v) }
+		} else {
+			VOID
+		}
+	}
+
+	#[inline]
+	fn set(&mut self, v: vec3i, b: Block) {
+		self.array.set(v, b);
+	}
+}
 
 impl Planet {
 	pub fn new(rad: i32) -> Self {

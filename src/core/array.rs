@@ -30,9 +30,18 @@ impl Array {
 		(((v[2] + s[2])*(2*s[1]) + (v[1] + s[1])) as usize)*(2*s[0] as usize) + (v[0] + s[0]) as usize
 	}
 
-	#[inline]
-	fn check_bounds(&self, v: vec3i) {
-		assert!((v.ge_(-self.size_) & v.lt_(self.size_)).all());
+	pub fn inside(&self, v: vec3i) -> bool {
+		(v.ge_(-self.size_) & v.lt_(self.size_)).all()
+	}
+
+	pub unsafe fn get_unchecked(&self, v: vec3i) -> Block {
+		let i = self.vtoi(v);
+		*self.data_.get_unchecked(i)
+	}
+
+	pub unsafe fn set_unchecked(&mut self, v: vec3i, b: Block) {
+		let i = self.vtoi(v);
+		*self.data_.get_unchecked_mut(i) = b;
 	}
 }
 
@@ -41,15 +50,13 @@ impl Map for Array {
 		self.size_
 	}
 
-	fn set(&mut self, v: vec3i, b: Block) {
-		self.check_bounds(v);
-		let i = self.vtoi(v);
-		self.data_[i] = b;
+	fn get(&self, v: vec3i) -> Block {
+		assert!(self.inside(v));
+		unsafe { self.get_unchecked(v) }
 	}
 
-	fn get(&self, v: vec3i) -> Block {
-		self.check_bounds(v);
-		let i = self.vtoi(v);
-		self.data_[i]
+	fn set(&mut self, v: vec3i, b: Block) {
+		assert!(self.inside(v));
+		unsafe { self.set_unchecked(v, b); }
 	}
 }
