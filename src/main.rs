@@ -23,6 +23,8 @@ use sdl2::mouse::{MouseButton};
 
 use core::pos::*;
 use core::ori::*;
+use core::map::*;
+use core::block;
 
 use view::engine::Engine;
 use view::planet::Planet;
@@ -44,15 +46,15 @@ fn main() {
 		gl::DepthFunc(gl::LESS);
 		
 		gl::Enable(gl::CULL_FACE);
-		gl::CullFace(gl::FRONT);
+		gl::CullFace(gl::BACK);
 	}
 
-	let mut engine = Engine::new().load_program("main", "main.vs", "main.fs").unwrap();
-	let mut planet = Planet::new(32);
+	let mut engine = Engine::new().load_program("array", "array.vs", "array.fs").unwrap();
+	let mut planet = Planet::new(16);
 
 	let mut phi: f64 = 0.0;
 	let mut theta: f64 = PI/4.0;
-	let mut rad: f64 = 3.0;
+	let mut rad: f64 = (planet.size().sqr() as f64).sqrt()*block::SIZE;
 
 	let sens: f64 = 1e-2;
 	let zoom: f64 = 1.2;
