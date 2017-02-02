@@ -17,7 +17,7 @@ use la::mat::*;
 
 use gl4u::gl;
 
-use sdl2::event::{Event};
+use sdl2::event::{Event, WindowEvent};
 use sdl2::keyboard::{Keycode};
 use sdl2::mouse::{MouseButton};
 
@@ -36,7 +36,7 @@ fn main() {
 
 	let sdl_context = sdl2::init().unwrap();
 	let video_subsys = sdl_context.video().unwrap();
-	let window = video_subsys.window("SpaceCraft", width, height).position_centered().opengl().build().unwrap();
+	let window = video_subsys.window("SpaceCraft", width, height).position_centered().opengl().resizable().build().unwrap();
 
 	let _context = window.gl_create_context().unwrap();
 	gl::load_with(|name| video_subsys.gl_get_proc_address(name) as *const _);
@@ -81,7 +81,16 @@ fn main() {
 				Event::MouseWheel{y, ..} => {
 					rad *= zoom.powi(-(y as i32));
 				},
-				_ => continue,
+				Event::Window{win_event, ..} => {
+					match win_event {
+						WindowEvent::Resized(w, h) => {
+							unsafe { gl::Viewport(0, 0, w, h); }
+							engine.camera.aspect(w as f64 / h as f64);
+						},
+						_ => {},
+					} 
+				},
+				_ => {},
 			}
 		}
 

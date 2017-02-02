@@ -25,6 +25,11 @@ impl Camera {
 			proj: Proj::new(),
 		}
 	}
+
+	pub fn aspect(&mut self, ar: f64) {
+		let n = self.proj.n;
+		self.proj.set_wh(ar*n, n);
+	}
 }
 
 impl_pos_mut!(Camera, pos_);
