@@ -5,11 +5,15 @@ use core::pos::*;
 use core::ori::*;
 
 use core::block::*;
-use core::map::Map;
+use core::map::*;
 use core::array::Array;
+use core::chunk::*;
+use core::terrain::*;
 
 pub struct Planet {
-	array: Array,
+	gen: Generator,
+	pub chunks: Array<ChunkOption>,
+	pub chunk_size: vec3i,
 	pos_: vec3d,
 	ori_: mat3d,
 }
@@ -17,38 +21,53 @@ pub struct Planet {
 impl_pos_mut!(Planet, pos_);
 impl_ori_mut!(Planet, ori_);
 
-impl Map for Planet {
-	#[inline]
+impl Size3 for Planet {
 	fn size(&self) -> vec3i {
-		self.array.size()
+		self.chunks.size()*self.chunk_size*2
 	}
-	
-	#[inline]
+}
+
+impl Map<Block> for Planet {
 	fn get(&self, v: vec3i) -> Block {
-		if self.array.inside(v) {
-			unsafe { self.array.get_unchecked(v) }
+		if self.inside(v) {
+			let (cv, cm) = v.div_mod_floor(self.chunk_size*2);
+			match *self.chunks.get_ref(cv) {
+				ChunkOption::Void => VOID,
+				ChunkOption::Undiscovered => ROCK,
+				ChunkOption::Filled(ref chunk) => chunk.get(cm),
+			}
 		} else {
 			VOID
 		}
 	}
 
-	#[inline]
 	fn set(&mut self, v: vec3i, b: Block) {
-		self.array.set(v, b);
+		if self.inside(v) {
+			let (cv, cm) = v.div_mod_floor(self.chunk_size*2);
+			match *self.chunks.get_ref_mut(cv) {
+				ChunkOption::Void => {}, // create filled chunk
+				ChunkOption::Undiscovered => {}, // discover
+				ChunkOption::Filled(ref mut chunk) => { chunk.set(cm, b); },
+			}
+		}
+		self.update();
 	}
 }
 
 impl Planet {
-	pub fn new(rad: i32) -> Self {
-		let mut self_ = Planet { array: Array::new([rad, rad, rad].into()), pos_: vec3d::zero(), ori_: mat3d::one() };
-		for iz in -rad..rad {
-			for iy in -rad..rad {
-				for ix in -rad..rad {
-					let rv = vec3d::from([(ix as f64) + 0.5, (iy as f64) + 0.5, (iz as f64) + 0.5]);
-					self_.set([ix, iy, iz].into(), if rv.length() < (rad - 1) as f64 { ROCK } else { VOID });
-				}
-			}
-		}
-		self_
+	pub fn new(chunk_size: i32, chunk_count: i32) -> Self {
+		let mut p = Planet { 
+			gen: Generator::new(chunk_count*2*chunk_size),
+			chunks: Array::new(vec3i::from_scal(chunk_count), |_| ChunkOption::Undiscovered),
+			chunk_size: vec3i::from_scal(chunk_size),
+			pos_: vec3d::zero(),
+			ori_: mat3d::one()
+		};
+		p.update();
+		p
+	}
+
+	fn update(&mut self) {
+		
 	}
 }

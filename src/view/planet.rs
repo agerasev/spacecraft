@@ -6,7 +6,7 @@ use la::mat::*;
 use core::pos::*;
 use core::ori::*;
 use core::block::*;
-use core::map::Map as CoreMap;
+use core::map::{Map, Size3};
 use core::planet::Planet as CorePlanet;
 
 use view::draw::Draw;
@@ -34,12 +34,9 @@ derive_ori_mut!(Planet, planet);
 
 impl_model!(Planet);
 
-impl CoreMap for Planet {
-	#[inline]
-	fn size(&self) -> vec3i {
-		self.planet.size()
-	}
-	
+derive_size3!(Planet, planet);
+
+impl Map<Block> for Planet {
 	#[inline]
 	fn get(&self, v: vec3i) -> Block {
 		self.planet.get(v)
@@ -53,9 +50,9 @@ impl CoreMap for Planet {
 }
 
 impl Planet {
-	pub fn new(rad: i32) -> Self {
+	pub fn new(chunk_size: i32, chunk_count: i32) -> Self {
 		Planet {
-			planet: CorePlanet::new(rad),
+			planet: CorePlanet::new(chunk_size, chunk_count),
 			vertex: Buffer::new(3),
 			color: Buffer::new(3),
 			tex_pos: Buffer::new(2),

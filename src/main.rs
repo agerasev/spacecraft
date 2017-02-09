@@ -50,7 +50,7 @@ fn main() {
 	}
 
 	let mut engine = Engine::new().load_program("array", "array.vs", "array.fs").unwrap();
-	let mut planet = Planet::new(16);
+	let mut planet = Planet::new(2, 2);
 
 	let mut phi: f64 = 0.0;
 	let mut theta: f64 = PI/4.0;
