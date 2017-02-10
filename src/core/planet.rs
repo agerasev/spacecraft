@@ -1,3 +1,4 @@
+use num::*;
 use la::vec::*;
 use la::mat::*;
 
@@ -31,6 +32,7 @@ impl Map<Block> for Planet {
 	fn get(&self, v: vec3i) -> Block {
 		if self.inside(v) {
 			let (cv, cm) = v.div_mod_floor(self.chunk_size*2);
+			let cm = cm - self.chunk_size;
 			match *self.chunks.get_ref(cv) {
 				ChunkOption::Void => VOID,
 				ChunkOption::Undiscovered => ROCK,
@@ -68,6 +70,8 @@ impl Planet {
 	}
 
 	fn update(&mut self) {
-		
+		for iv in (-self.chunks.size()).iter_to(self.chunks.size()) {
+			*self.chunks.get_ref_mut(iv) = self.gen.generate(iv*self.chunk_size*2 + self.chunk_size, self.chunk_size);
+		}
 	}
 }

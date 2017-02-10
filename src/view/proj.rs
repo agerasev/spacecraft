@@ -1,5 +1,4 @@
-extern crate gl4u;
-
+use num::*;
 use la::mat::*;
 use gl4u::gl::types::*;
 

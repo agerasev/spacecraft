@@ -1,5 +1,3 @@
-extern crate gl4u;
-
 use std::rc::Rc;
 use std::collections::{HashMap};
 

@@ -1,5 +1,3 @@
-extern crate gl4u;
-
 use la::mat::*;
 
 use core::pos::*;

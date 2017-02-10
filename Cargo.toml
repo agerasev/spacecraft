@@ -4,6 +4,7 @@ version = "0.1.0"
 authors = ["Alexey Gerasev <alexey.gerasev@gmail.com>"]
 
 [dependencies]
+num = "0.1.36"
 sdl2 = "0.27.3"
 gl4u = { path = "gl4u" }
 linalg = { path = "linalg" }

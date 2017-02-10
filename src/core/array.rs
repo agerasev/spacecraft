@@ -1,3 +1,4 @@
+use num::*;
 use la::vec::*;
 
 use core::map::*;
@@ -13,12 +14,8 @@ impl<T> Array<T> {
 		let mut v = Vec::new();
 		let vec_len = (8*size[0] as usize)*(size[1] as usize)*(size[2] as usize);
 		v.reserve(vec_len);
-		for iz in -size[2]..size[2] {
-			for iy in -size[1]..size[1] {
-				for ix in -size[0]..size[0] {
-					v.push(f([ix, iy, iz].into()));
-				}
-			}
+		for iv in (-size).iter_to(size) {
+			v.push(f(iv));
 		}
 		assert_eq!(v.len(), vec_len);
 		Array { data_: v, size_: size }

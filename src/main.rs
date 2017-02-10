@@ -1,3 +1,4 @@
+extern crate num;
 extern crate sdl2;
 extern crate gl4u;
 extern crate linalg as la;
@@ -50,7 +51,7 @@ fn main() {
 	}
 
 	let mut engine = Engine::new().load_program("array", "array.vs", "array.fs").unwrap();
-	let mut planet = Planet::new(2, 2);
+	let mut planet = Planet::new(3, 3);
 
 	let mut phi: f64 = 0.0;
 	let mut theta: f64 = PI/4.0;
