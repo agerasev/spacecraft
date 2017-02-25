@@ -1,3 +1,4 @@
+//pub mod error;
 #[macro_use]
 pub mod model;
 pub mod proj;

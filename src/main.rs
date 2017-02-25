@@ -50,7 +50,8 @@ fn main() {
 		gl::CullFace(gl::BACK);
 	}
 
-	let mut engine = Engine::new().load_program("array", "array.vs", "array.fs").unwrap();
+	let mut engine = Engine::new();
+	engine.load_program("array", "array.vs", "array.fs").unwrap();
 	let mut planet = Planet::new(3, 3);
 
 	let mut phi: f64 = 0.0;
@@ -111,7 +112,7 @@ fn main() {
 			gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 		}
 		
-		planet.draw(&engine.handle()).unwrap();
+		planet.draw(&mut engine).unwrap();
 
 		unsafe { gl::Flush(); }
 

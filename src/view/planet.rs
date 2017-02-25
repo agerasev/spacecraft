@@ -9,12 +9,13 @@ use core::map::{Map, Size3};
 use core::planet::Planet as CorePlanet;
 
 use view::draw::Draw;
-use view::engine::Handle;
+use view::engine::Engine;
 use view::model::*;
 
 use gl4u::gl::types::*;
 use gl4u::buffer::Buffer;
 use gl4u::pass::Prim;
+use gl4u::error::Error;
 
 pub struct Planet {
 	planet: CorePlanet,
@@ -160,10 +161,11 @@ impl Planet {
 }
 
 impl Draw for Planet {
-	fn draw(&mut self, handle: &Handle) -> Result<(), String> {
+	fn draw(&mut self, engine: &mut Engine) -> Result<(), Error> {
 		if self.dirty { self.update(); }
 		if self.bufsize > 0 {
-			let mut pass = handle.use_program("array");
+			let mut pass = engine.use_program("array").unwrap();
+			pass = engine.bind_camera(pass);
 			pass = try!(pass.uniform_matrix("model", self.model().data()));
 			pass = try!(pass.attribute("position", &self.vertex));
 			pass = try!(pass.attribute("color", &self.color));

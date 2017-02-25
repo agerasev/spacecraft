@@ -3,7 +3,9 @@ use std::collections::{HashMap};
 
 use gl4u::shader::{Shader, Type};
 use gl4u::program::Program;
+use gl4u::buffer::Buffer;
 use gl4u::pass::Pass;
+use gl4u::error::Error;
 
 use view::model::Model;
 use view::camera::Camera;
@@ -11,6 +13,7 @@ use view::camera::Camera;
 pub struct Engine {
 	shaders: HashMap<String, Rc<Shader>>,
 	programs: HashMap<String, Program>,
+	buffers: HashMap<String, Buffer>,
 	pub camera: Camera,
 }
 
@@ -20,16 +23,23 @@ pub struct Handle<'a> {
 
 impl Engine {
 	pub fn new() -> Self {
-		Engine { shaders: HashMap::new(), programs: HashMap::new(), camera: Camera::new() }
+		Engine { shaders: HashMap::new(), programs: HashMap::new(), buffers: HashMap::new(), camera: Camera::new() }
 	}
 
-	pub fn load_shader(&mut self, filename: &str, sht: Type) -> Result<Rc<Shader>, String> {
+	pub fn load_shader(&mut self, filename: &str, sht: Type) -> Result<Rc<Shader>, Error> {
 		if !self.shaders.contains_key(filename) {
-			let (sh, log) = try!(try!(Shader::new(sht).load_file(filename)).compile());
-			if log.len() > 0 { println!("{}", log); }
-			let shrc = Rc::new(sh);
-			self.shaders.insert(filename.to_string(), shrc.clone());
-			Ok(shrc)
+			match try!(Shader::new(sht).load_file(filename)).compile() {
+				Ok((sh, log)) => {
+					if log.len() > 0 { println!("{}", log); }
+					let shrc = Rc::new(sh);
+					self.shaders.insert(filename.to_string(), shrc.clone());
+					Ok(shrc)
+				},
+				Err((err, log)) => {
+					println!("{}", log);
+					Err(err)
+				},
+			}
 		} else {
 			match self.shaders.get(filename) {
 			    Some(shrc) => Ok(shrc.clone()),
@@ -38,34 +48,48 @@ impl Engine {
 		}
 	}
 
-	pub fn load_program(mut self, name: &str, vsfn: &str, fsfn: &str) -> Result<Self, String> {
+	pub fn load_program(&mut self, name: &str, vsfn: &str, fsfn: &str) -> Result<(), Error> {
 		let vs = try!(self.load_shader(&("res/shaders/".to_string() + vsfn), Type::Vertex));
 		let fs = try!(self.load_shader(&("res/shaders/".to_string() + fsfn), Type::Fragment));
 		let prog = try!(Program::new().attach_rc(vs).attach_rc(fs).link());
 		self.programs.insert(name.to_string(), prog);
-		Ok(self)
+		Ok(())
 	}
 
-	pub fn use_program(&self, name: &str) -> Result<Pass, String> {
+	pub fn use_program(&self, name: &str) -> Result<Pass, Error> {
 		match self.programs.get(name) {
 			Some(prog) => prog.use_(),
-			None => Err("No such program `".to_string() + name + "`"),
+			None => Err(Error::new("No such program `".to_string() + name + "`")),
 		}
 	}
 
-	pub fn handle(&self) -> Handle {
-		Handle::new(self)
+	pub fn load_buffer(&mut self, name: &str, buf: Buffer) -> Result<(), Error> {
+		if !self.buffers.contains_key(name) {
+			self.buffers.insert(name.to_string(), buf);
+			Ok(())
+		} else {
+			Err(Error::new("No such buffer `".to_string() + name + "`"))
+		}
 	}
-}
 
-impl<'a> Handle<'a> {
-	fn new(engine: &'a Engine) -> Self {
-		Handle::<'a> { engine: engine }
+	/*
+	pub fn get_buffer(&self, name: &str) -> Option<&Buffer> {
+		match self.buffers.get(name) {
+			Some(buf) => Some(&buf),
+			None => None,
+		}
 	}
 
-	pub fn use_program(&self, name: &str) -> Pass {
-		self.engine.use_program(name).unwrap()
-			.uniform_matrix("proj", self.engine.camera.proj.mat().data()).unwrap()
-			.uniform_matrix("view", self.engine.camera.model().inverse().data()).unwrap()
+	pub fn get_buffer_mut(&mut self, name: &str) -> Option<&mut Buffer> {
+		match self.buffers.get_mut(name) {
+			Some(ref buf) => Some(&mut buf),
+			None => None,
+		}
+	}
+	*/
+
+	pub fn bind_camera(&self, pass: Pass) -> Pass {
+		pass.uniform_matrix("proj", self.camera.proj.mat().data()).unwrap()
+		    .uniform_matrix("view", self.camera.model().inverse().data()).unwrap()
 	}
 }
