@@ -5,14 +5,12 @@ use la::mat::*;
 use core::pos::*;
 use core::ori::*;
 
-use gl4u::gl::types::*;
-
 use view::model::*;
 use view::proj::*;
 
 pub struct Camera {
-	pub pos_: vec3d,
-	pub ori_: mat3d,
+	pub pos_: vec3f,
+	pub ori_: mat3f,
 	pub proj: Proj,
 }
 
@@ -25,7 +23,7 @@ impl Camera {
 		}
 	}
 
-	pub fn aspect(&mut self, ar: f64) {
+	pub fn aspect(&mut self, ar: f32) {
 		let n = self.proj.n;
 		self.proj.set_wh(ar*n, n);
 	}

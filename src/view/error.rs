@@ -1,35 +1,25 @@
 use std::error::Error as StdError;
-use std::fmt;
+use std::fmt::{Display, Debug, Formatter, Error as FmtError};
 
-use gl4u::error::Error as GlError;
-
-pub enum Error {
-	Msg { msg: String },
-	Gl { err: GlError },
+#[derive(Debug)]
+pub struct Error {
+	msg: String,
 }
 
 impl Error {
 	pub fn new(msg: String) -> Error {
-		Error::Msg { msg: msg }
-	}
-
-	pub fn from_gl(err: GlError) -> Error {
-		Error::Gl { err: GlError }
+		Error { msg: msg }
 	}
 }
 
 impl StdError for Error {
 	fn description(&self) -> &str {
-		match self {
-			Error::Msg(msg) => &msg,
-			Error::Gl(err) => err.description(),
-		}
+		&self.msg
 	}
+}
 
-	fn cause(&self) -> Option<&StdError> {
-		match self {
-			Error::Msg => None,
-			Error::Gl(err) => Some(&err),
-		}
+impl Display for Error {
+	fn fmt(&self, formatter: &mut Formatter) -> Result<(), FmtError> {
+		write!(formatter, "{}", self.description())
 	}
 }

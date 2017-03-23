@@ -1,13 +1,12 @@
 use num::*;
 use la::mat::*;
-use gl4u::gl::types::*;
 
 pub struct Proj {
-	pub f: f64,
-	pub n: f64,
-	pub w: f64,
-	pub h: f64,
-	pub mat_: mat4<GLfloat>,
+	pub f: f32,
+	pub n: f32,
+	pub w: f32,
+	pub h: f32,
+	pub mat_: mat4f,
 }
 
 impl Proj {
@@ -24,27 +23,27 @@ impl Proj {
 		self_
 	}
 
-	pub fn mat(&self) -> mat4<GLfloat> {
+	pub fn mat(&self) -> mat4f {
 		self.mat_
 	}
 
-	pub fn set_fn(&mut self, f: f64, n: f64) {
+	pub fn set_fn(&mut self, f: f32, n: f32) {
 		self.f = f;
 		self.n = n;
 		self.update();
 	}
 
-	pub fn set_wh(&mut self, w: f64, h: f64) {
+	pub fn set_wh(&mut self, w: f32, h: f32) {
 		self.w = w;
 		self.h = h;
 		self.update();
 	}
 
 	fn update(&mut self) {
-		self.mat_[(0, 0)] = (self.n/self.w) as GLfloat;
-		self.mat_[(1, 1)] = (self.n/self.h) as GLfloat;
-		self.mat_[(2, 2)] = (-(self.f + self.n)/(self.f - self.n)) as GLfloat;
-		self.mat_[(3, 2)] = (-2.0*self.f*self.n/(self.f - self.n)) as GLfloat;
+		self.mat_[(0, 0)] = self.n/self.w;
+		self.mat_[(1, 1)] = self.n/self.h;
+		self.mat_[(2, 2)] = -(self.f + self.n)/(self.f - self.n);
+		self.mat_[(3, 2)] = -2.0*self.f*self.n/(self.f - self.n);
 		self.mat_[(2, 3)] = -1.0;
 		self.mat_[(3, 3)] = 0.0;
 	}

@@ -15,8 +15,8 @@ pub struct Planet {
 	gen: Generator,
 	pub chunks: Array<ChunkOption>,
 	pub chunk_size: vec3i,
-	pos_: vec3d,
-	ori_: mat3d,
+	pos_: vec3f,
+	ori_: mat3f,
 }
 
 impl_pos_mut!(Planet, pos_);
@@ -62,8 +62,8 @@ impl Planet {
 			gen: Generator::new(chunk_count*2*chunk_size),
 			chunks: Array::new(vec3i::from_scal(chunk_count), |_| ChunkOption::Undiscovered),
 			chunk_size: vec3i::from_scal(chunk_size),
-			pos_: vec3d::zero(),
-			ori_: mat3d::one()
+			pos_: vec3f::zero(),
+			ori_: mat3f::one()
 		};
 		p.update();
 		p
